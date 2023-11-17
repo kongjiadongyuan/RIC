@@ -23,9 +23,9 @@ But if you don't want to do this, you can also specify the path to `idat64` and 
 
 ## Usage
 
-There are two ways to use this package.
+There are two methods to use this package.
 
-### "CLASSIC" way
+### "CLASSIC" method
 
 This approach gives you the experience of writing a native IDA script.
 
@@ -92,7 +92,7 @@ function_list = list(idautils.Functions())
 -     json.dump(function_list, f, indent=4)
 ```
 
-### "WITH" way
+### "WITH" method
 
 You should have noticed that if you want to maintain the original ida script code style, you still cannot avoid manually managing the life cycle of ric (behind it is the life cycle of the ida process). 
 
@@ -120,3 +120,9 @@ with RIC(config) as ric:
 - `options`: Most of the time there is no need to pass arguments anymore. However, if you want to control some of the behavior of IDA, you can use this interface to add custom options. For example, if you want IDA to automatically load `dwarf` debug information, you can set `options=["-Odwarf:import_lnnums=1"]`.
 - `re_analyze`: By default, `RIC` will reuse existing `.i64` databases (if exists), which means that if you analyze the same binary multiple times, the database will not be re-analyzed. If you want to re-analyze the database, you can set `re_analyze=True`.
 - `connect_timeout`: `RIC` is implemented based on `rpyc`, so it is possible that the client cannot connect to the server (we are still in a very early development version).
+
+
+## Best Practice
+
+The `idapython` plug-in has its own independently specified python path, which means that the environment used by the python script you write using `RIC` may be different from that in `idapython`. For the `RIC` framework, it will work as long as the `rpyc` package is in the environment where `idapython` is located, but it is still recommended to use the same environment. You can specify it using `idapyswitch` under the ida installation path.
+

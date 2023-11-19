@@ -4,7 +4,7 @@ setup(
     name="ric",
     packages=find_packages(),
     version="0.0.1",
-    install_packages=[
+    install_requires=[
         "rpyc",
     ],
     description="Remote IDA Call, a tool to call IDA functions remotely",

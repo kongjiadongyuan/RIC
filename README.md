@@ -21,6 +21,23 @@ Do not add `/path/to/ida` to your PATH, this may cause some problems :-(
 
 But if you don't want to do this, you can also specify the path to `idat64` and `idat` when you create a `RICConfig` object :-)
 
+## Configuration
+
+- IDA Python switch
+
+    You can find `idapyswitch` under the ida installation path, such as `/path/to/ida/idapyswitch`. Run it and select the `python` version you want to use. If you want to use the system `python`, you can select `System Python` and then select the `python` version you want to use.
+
+    For **conda** users, you can select `idapyswitch -s /path/to/conda/lib/libpython.so`, and then add `/path/to/conda/lib` to your `LD_LIBRARY_PATH`.
+    ```bash
+    export LD_LIBRARY_PATH=/path/to/conda/lib:$LD_LIBRARY_PATH
+    ```
+    
+    You can easily find the path to `libpython.so` with `find_libpython` package.
+    ```bash
+    (conda env) $ pip install find_libpython
+    (conda env) $ find_libpython
+    ```
+
 ## Usage
 
 There are two methods to use this package.
@@ -126,3 +143,9 @@ with RIC(config) as ric:
 
 The `idapython` plug-in has its own independently specified python path, which means that the environment used by the python script you write using `RIC` may be different from that in `idapython`. For the `RIC` framework, it will work as long as the `rpyc` package is in the environment where `idapython` is located, but it is still recommended to use the same environment. You can specify it using `idapyswitch` under the ida installation path.
 
+
+## TODO
+
+- [x] Support for IDA Pro 7.6, 8.3
+- [x] Test on Linux, MacOS
+- [ ] Support automatic switching of IDA python version

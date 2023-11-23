@@ -64,7 +64,7 @@ class RICConfig:
         options: List[str] = [],
         re_analyze: bool = False,
         connect_timeout: int = 3,
-        use_current_python: bool = False
+        use_current_python: bool = None
     ):
         # Initialize normal variables
         self.ida = ida
@@ -77,6 +77,9 @@ class RICConfig:
         
         if self.use_current_python and platform.system() != "Linux":
             raise ValueError("use_current_python is only supported on Linux now")
+
+        if self.use_current_python is None and platform.system() == "Linux":
+            self.use_current_python = True
 
         if idb_path is not None:
             self.idb_path = Path(idb_path)

@@ -139,7 +139,7 @@ with RIC(config) as ric:
 - `options`: Most of the time there is no need to pass arguments anymore. However, if you want to control some of the behavior of IDA, you can use this interface to add custom options. For example, if you want IDA to automatically load `dwarf` debug information, you can set `options=["-Odwarf:import_lnnums=1"]`.
 - `re_analyze`: By default, `RIC` will reuse existing `.i64` databases (if exists), which means that if you analyze the same binary multiple times, the database will not be re-analyzed. If you want to re-analyze the database, you can set `re_analyze=True`.
 - `connect_timeout`: `RIC` is implemented based on `rpyc`, so it is possible that the client cannot connect to the server (we are still in a very early development version).
-- `use_current_python`: `RIC` can automatically switch the IDA python version, but it is not perfect. If you want to use the current python version, you can set `use_current_python=True`, Only works on Linux now.
+- `use_current_python`: `RIC` can automatically switch the IDA python version, but it is not perfect. If you want to use the current python version, you can set `use_current_python=True`. Only works on Linux now, default is True.
 
 
 ## Best Practice

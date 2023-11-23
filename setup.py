@@ -6,6 +6,7 @@ setup(
     version="0.0.1",
     install_requires=[
         "rpyc",
+        "pyelftools"
     ],
     description="Remote IDA Call, a tool to call IDA functions remotely",
     author="kjdy",

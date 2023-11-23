@@ -7,10 +7,15 @@ import subprocess
 from pathlib import Path
 from typing import Union, List
 from enum import Enum
+import platform
+from find_libpython import find_libpython
+import tempfile
+import os
+
 from .proc_utils import wait_for_stop
+from .find_idapython import libpython_wanted_linux
 
 SERVER_SCRIPT = Path(__file__).parent / "ida_script" / "server.py"
-
 
 def rpyc_connect(*args, **kwargs):
     timeout = kwargs.pop("timeout", 5)
@@ -59,6 +64,7 @@ class RICConfig:
         options: List[str] = [],
         re_analyze: bool = False,
         connect_timeout: int = 3,
+        use_current_python: bool = False
     ):
         # Initialize normal variables
         self.ida = ida
@@ -67,6 +73,10 @@ class RICConfig:
         self.options = options
         self.connect_timeout = connect_timeout
         self.re_analyze = re_analyze
+        self.use_current_python = use_current_python
+        
+        if self.use_current_python and platform.system() != "Linux":
+            raise ValueError("use_current_python is only supported on Linux now")
 
         if idb_path is not None:
             self.idb_path = Path(idb_path)
@@ -78,7 +88,7 @@ class RIC:
         self.config = config
         self._proc = None
         self._conn = None
-        
+        self._tmpdir = None
         self._remote = None
 
     def start_cmd(self, port: int, re_analyze: bool = False):
@@ -98,21 +108,44 @@ class RIC:
             cmd.append(str(self.config.binary))
         return cmd
     
+    def spawn_ida(self, port: int):
+        cmd = self.start_cmd(port, self.config.re_analyze)
+        env = os.environ.copy()
+        if self.config.use_current_python:
+            try:
+                if platform.system() == "Linux":
+                    wanted_libpython = libpython_wanted_linux(self.config.ida)
+                    current_libpython = find_libpython()
+                    if wanted_libpython is not None and current_libpython is not None:
+                        self._tmpdir = tempfile.TemporaryDirectory()
+                        env = os.environ.copy()
+                        tmp_dir_path_str = self._tmpdir.name
+                        env["LD_LIBRARY_PATH"] = tmp_dir_path_str + (":" + env['LD_LIBRARY_PATH'] if 'LD_LIBRARY_PATH' in env else "")
+                        os.symlink(current_libpython, self._tmpdir.name + "/" + wanted_libpython)
+            except Exception:
+                pass
+        self._proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+        )
+                
+    
     def start(self):
         port = get_free_port()
         clear_broken_idb(self.config.idb_path)
         if self.config.idb_path.exists() and self.config.re_analyze:
             self.config.idb_path.unlink()
-        cmd = self.start_cmd(port, self.config.re_analyze)
-        self._proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        
+        # Set self._proc and self._tmpdir
+        self.spawn_ida(port)
 
         # Check if the server is running
         conn = rpyc_connect("localhost", port, timeout=self.config.connect_timeout)
         self._conn = conn
 
     def stop(self):
+        if self._tmpdir is not None:
+            self._tmpdir.cleanup()
+            self._tmpdir = None
         if self._conn is not None:
             self._conn.close()
             self._conn = None
@@ -136,4 +169,3 @@ class RIC:
     def get_module(self, module):
         self.execute(f"import {module}")
         return self.eval(module)
-        

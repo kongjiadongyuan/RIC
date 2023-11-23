@@ -25,6 +25,8 @@ But if you don't want to do this, you can also specify the path to `idat64` and 
 
 - IDA Python switch
 
+    **RICConfig now supports automatic switching of IDA python version, so you can skip this step. Just set `RICConfig(use_current_python=True)`**
+
     You can find `idapyswitch` under the ida installation path, such as `/path/to/ida/idapyswitch`. Run it and select the `python` version you want to use. If you want to use the system `python`, you can select `System Python` and then select the `python` version you want to use.
 
     For **conda** users, you can select `idapyswitch -s /path/to/conda/lib/libpython.so`, and then add `/path/to/conda/lib` to your `LD_LIBRARY_PATH`.
@@ -137,6 +139,7 @@ with RIC(config) as ric:
 - `options`: Most of the time there is no need to pass arguments anymore. However, if you want to control some of the behavior of IDA, you can use this interface to add custom options. For example, if you want IDA to automatically load `dwarf` debug information, you can set `options=["-Odwarf:import_lnnums=1"]`.
 - `re_analyze`: By default, `RIC` will reuse existing `.i64` databases (if exists), which means that if you analyze the same binary multiple times, the database will not be re-analyzed. If you want to re-analyze the database, you can set `re_analyze=True`.
 - `connect_timeout`: `RIC` is implemented based on `rpyc`, so it is possible that the client cannot connect to the server (we are still in a very early development version).
+- `use_current_python`: `RIC` can automatically switch the IDA python version, but it is not perfect. If you want to use the current python version, you can set `use_current_python=True`, Only works on Linux now.
 
 
 ## Best Practice
@@ -146,6 +149,9 @@ The `idapython` plug-in has its own independently specified python path, which m
 
 ## TODO
 
-- [x] Support for IDA Pro 7.6, 8.3
-- [x] Test on Linux, MacOS
-- [ ] Support automatic switching of IDA python version
+- [x] Support for IDA Pro version >=7.6, <=8.3
+- [x] Test on Linux, MacOS, Windows
+- Support automatic switching of IDA python version
+    - [x] Support Linux automatic switching
+    - [ ] Support MacOS automatic switching
+    - [ ] Support Windows automatic switching

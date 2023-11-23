@@ -169,3 +169,13 @@ class RIC:
     def get_module(self, module):
         self.execute(f"import {module}")
         return self.eval(module)
+    
+    def is_alive(self):
+        if self._proc is None:
+            return False
+        return self._proc.poll() is None
+    
+    def exit_code(self):
+        if self._proc is None:
+            return None
+        return self._proc.poll()

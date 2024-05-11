@@ -10,6 +10,7 @@ from enum import Enum
 import platform
 from find_libpython import find_libpython
 import tempfile
+import threading
 import os
 
 from .proc_utils import wait_for_stop
@@ -93,6 +94,7 @@ class RIC:
         self._conn = None
         self._tmpdir = None
         self._remote = None
+        self._lock = None
 
     def start_cmd(self, port: int, re_analyze: bool = False):
         cmd = []
@@ -182,3 +184,12 @@ class RIC:
         if self._proc is None:
             return None
         return self._proc.poll()
+
+    def acquire(self):
+        if self._lock is None:
+            self._lock = threading.Lock()
+        self._lock.acquire()
+    
+    def release(self):
+        if self._lock is not None:
+            self._lock.release()

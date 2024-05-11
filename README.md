@@ -128,6 +128,39 @@ with RIC(config) as ric:
     function_list = list(idautils.Functions())
 ```
 
+The `with` statement will automatically start and stop the `RIC` object, and you can use the `idautils` module as if you were in the IDA python interpreter.
+
+Or you can predefine the `RIC` object and use it in the function.
+
+```python
+from ric import RICConfig, RIC
+config = RICConfig(
+    binary="/path/to/your/binary"
+)
+ric = RIC(config)
+
+def target_function(ric):
+    with ric:
+        idautils = ric.get_module('idautils')
+        function_list = list(idautils.Functions())
+```
+
+### Thread Safety
+
+In case you want to use `RIC` in a multi-threaded environment, `RIC` object provides `acquire` and `release` methods to ensure thread safety.
+
+```python
+def function_may_be_called_by_multiple_threads(ric):
+    with ric.acquire():
+        # Acquire the lock before "with" statement
+        # Ensure that only one thread can access the IDA process at the same time
+        with ric:
+            idautils = ric.get_module('idautils')
+            function_list = list(idautils.Functions())
+```
+
+
+
 ## Config
 
 `RICConfig` contains the following parameters:

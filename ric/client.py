@@ -159,11 +159,13 @@ class RIC:
             self._proc = None
     
     def __enter__(self):
+        self.acquire()
         self.start()   
         return self
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.stop()
+        self.release()
     
     def execute(self, *args, **kwargs):
         self._conn.root.execute(*args, **kwargs)

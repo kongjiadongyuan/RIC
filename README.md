@@ -147,18 +147,22 @@ def target_function(ric):
 
 ### Thread Safety
 
-In case you want to use `RIC` in a multi-threaded environment, `RIC` object provides `acquire` and `release` methods to ensure thread safety.
+In case you want to use `RIC` in a multi-threaded environment, there's only one thread can enter `with` statement at the same time ** for the same `RIC` object **.
 
 ```python
 def function_may_be_called_by_multiple_threads(ric):
-    with ric.acquire():
-        # Acquire the lock before "with" statement
-        # Ensure that only one thread can access the IDA process at the same time
-        with ric:
-            idautils = ric.get_module('idautils')
-            function_list = list(idautils.Functions())
+    with ric:
+        # Lock has been acquired here
+        idautils = ric.get_module('idautils')
+        function_list = list(idautils.Functions())
+    # Lock has been released here
 ```
 
+You can also use `RIC.acquire()` and `RIC.release()` to manually acquire and release the lock. Manually managing the lock can be conflicting with the `with` statement, so be careful.
+
+**RIC is not process-safe, using it in a multi-process environment can cause unexpected behavior.**
+
+**Opening multiple `RIC` objects for the same binary is not recommended, specify `idb_path` to distinguish different `RIC` objects.**
 
 
 ## Config

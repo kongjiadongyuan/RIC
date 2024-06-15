@@ -18,6 +18,9 @@ ida_nalt = ric.get_module("ida_nalt")
 ida_kernwin = ric.get_module("ida_kernwin")
 ida_hexrays = ric.get_module("ida_hexrays")
 
+print("Waiting for basic analysis")
+idc.auto_wait()
+print("Basic analysis completed")
 # Complete your "ida script"
 
 def get_asm(func):
@@ -69,9 +72,7 @@ def get_func_address(func):
     return {
         "address": hex(func)
     }
-print("Waiting for basic analysis")
-idc.auto_wait()
-print("Basic analysis completed")
+
 
 print(get_all_functions())
 

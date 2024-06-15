@@ -69,6 +69,9 @@ def get_func_address(func):
     return {
         "address": hex(func)
     }
+print("Waiting for basic analysis")
+idc.auto_wait()
+print("Basic analysis completed")
 
 print(get_all_functions())
 

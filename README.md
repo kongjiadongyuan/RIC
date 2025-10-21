@@ -1,5 +1,9 @@
 # Remote IDA Call
 
+IDA Pro officially supports headless calls in Python, and this repository is no longer updated.
+
+Please visit `https://docs.hex-rays.com/user-guide/idalib` to use the most advanced methods.
+
 This is a python package that allows you to call IDA functions from a remote process.
 
 ## Installation
